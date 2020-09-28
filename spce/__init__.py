@@ -12,5 +12,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+from .avro import Avro
 from .cloudevents import CloudEvent
 from .json import Json
+
+if Avro is None:
+    del Avro

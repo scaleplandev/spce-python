@@ -16,6 +16,7 @@ import unittest
 
 from spce import CloudEvent
 
+
 class CloudEventTestCase(unittest.TestCase):
 
     def test_create_event(self):
@@ -111,6 +112,46 @@ class CloudEventTestCase(unittest.TestCase):
                            id="1000",
                            time="2020-09-28T21:33:21Z")
 
+    def test_set_extension_attribute(self):
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+            external1="foo/bar"
+        )
+        self.compare_event(event,
+                           type="OximeterMeasured",
+                           source="oximeter/123",
+                           id="1000",
+                           external1="foo/bar")
+
+    def test_eq_distinct_instance(self):
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+        )
+        self.assertNotEqual(None, event)
+
+    def test_str(self):
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+        )
+        event_str = str(event)
+        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0', 'subject': None, 'datacontenttype': None, 'dataschema': None, 'time': None}'''
+        self.assertEqual(target, event_str)
+
+    def test_repr(self):
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+        )
+        event_str = repr(event)
+        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0', 'subject': None, 'datacontenttype': None, 'dataschema': None, 'time': None}'''
+        self.assertEqual(target, event_str)
 
     def compare_event(self, event: CloudEvent, *,
                  type: str,

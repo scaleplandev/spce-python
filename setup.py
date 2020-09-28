@@ -28,7 +28,6 @@ setup(
     description="ScalePlan's CloudEvents implementation",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    tests_require=['pytest', 'coverage', 'pytest-cov'],
     classifiers=[
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -38,7 +37,9 @@ setup(
         'Programming Language :: Python :: 3.8',
         'Operating System :: OS Independent',
     ],
-
     keywords='cloudevents,scaleplan,event',
-
+    tests_require=['pytest', 'coverage', 'pytest-cov'],
+    extras_require={
+        'avro': ['avro>=1.10']
+    }
 )

@@ -19,7 +19,7 @@ __all__ = "CloudEvent",
 
 class CloudEvent:
 
-    __slots__ = "_attributes", "_has_binary_data"
+    __slots__ = "_attributes", "_data", "_has_binary_data"
 
     def __init__(self, *,
                  type: str,
@@ -39,7 +39,6 @@ class CloudEvent:
             "id": id,
             "specversion": specversion,
             "subject": subject,
-            "data": data,
             "datacontenttype": datacontenttype,
             "dataschema": dataschema,
             "time": time,
@@ -47,6 +46,7 @@ class CloudEvent:
 
         # TODO: validation
 
+        self._data = data
         self._attributes.update(attributes)
         self._has_binary_data = isinstance(data, bytes)
 
@@ -54,7 +54,7 @@ class CloudEvent:
     source = property(lambda self: self._attributes.get("source"))
     id = property(lambda self: self._attributes.get("id"))
     specversion = property(lambda self: self._attributes.get("specversion"))
-    data = property(lambda self: self._attributes.get("data"))
+    data = property(lambda self: self._data)
     datacontenttype = property(lambda self: self._attributes.get("datacontenttype"))
     dataschema = property(lambda self: self._attributes.get("dataschema"))
     subject = property(lambda self: self._attributes.get("subject"))
@@ -72,7 +72,8 @@ class CloudEvent:
     def __eq__(self, other):
         if not isinstance(other, CloudEvent):
             return False
-        return self._attributes.__eq__(other._attributes)
+        return self._attributes == other._attributes \
+            and self._data == other._data
 
     def __hash__(self):
-        return hash(self._attributes)
+        return hash(self._attributes, self._data)

@@ -30,13 +30,12 @@ class Json:
         encoder = cls._ENCODER
         for attr, value in event._attributes.items():
             if value is not None:
-                if attr == "data":
-                    if event._has_binary_data:
-                        kvs.append('"data_b64":%s' % encoder.encode(b64encode(value).decode()))
-                    else:
-                        kvs.append('"data":%s' % encoder.encode(value))
-                else:
-                    kvs.append('"%s":%s' % (attr, encoder.encode(value)))
+                kvs.append('"%s":%s' % (attr, encoder.encode(value)))
+        if event._data is not None:
+            if event._has_binary_data:
+                kvs.append('"data_b64":%s' % encoder.encode(b64encode(event._data).decode()))
+            else:
+                kvs.append('"data":%s' % encoder.encode(event._data))
         return "{%s}" % ",".join(kvs)
 
     @classmethod
