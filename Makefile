@@ -16,3 +16,14 @@
 
 test:
 	py.test tests
+
+clean:
+	rm -rf build dist spce.egg-info
+
+build:
+	python setup.py sdist && python setup.py bdist_wheel
+
+upload:
+	twine upload dist/*
+
+release: clean build upload

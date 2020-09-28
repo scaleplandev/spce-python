@@ -13,6 +13,4 @@
 # limitations under the License.
 
 from .cloudevents import CloudEvent
-from .json import \
-    Encoder as JsonEncoder,\
-    Decoder as JsonDecoder
+from .json import Json

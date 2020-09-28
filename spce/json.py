@@ -17,47 +17,33 @@ from base64 import b64encode, b64decode
 
 from .cloudevents import CloudEvent
 
-__all__ = "Encoder", "Decoder"
+__all__ = "Json",
 
 
-class _JsonEncoder:
+class Json:
 
-    ATTRIBUTES = [
-        "type", "source", "id", "specversion", # required attributes
-        "datacontenttype", "subject",  # optional attributes, note that 'data' is missing
-        "dataschema", "time"
-    ]
+    _ENCODER = json.JSONEncoder()
 
-    def __init__(self):
-        self.encoder = json.JSONEncoder()
-
-    def encode(self, event: CloudEvent):
+    @classmethod
+    def encode(cls, event: CloudEvent):
         kvs = []
-        event_attrs = event._attributes
-        encoder = self.encoder
-        for attr in _JsonEncoder.ATTRIBUTES:
-            value = event_attrs.get(attr)
+        encoder = cls._ENCODER
+        for attr, value in event._attributes.items():
             if value is not None:
-                kvs.append('"%s":%s' % (attr, encoder.encode(value)))
-        data = event_attrs.get("data")
-        if data is not None:
-            if event._has_binary_data:
-                kvs.append('"data_b64":%s'% encoder.encode(b64encode(data).decode()))
-            else:
-                kvs.append('"data":%s'% encoder.encode(data))
+                if attr == "data":
+                    if event._has_binary_data:
+                        kvs.append('"data_b64":%s' % encoder.encode(b64encode(value).decode()))
+                    else:
+                        kvs.append('"data":%s' % encoder.encode(value))
+                else:
+                    kvs.append('"%s":%s' % (attr, encoder.encode(value)))
         return "{%s}" % ",".join(kvs)
 
-
-class _JsonDecoder:
-
-    def decode(self, text: str) -> CloudEvent:
+    @classmethod
+    def decode(cls, text: str) -> CloudEvent:
         d = json.loads(text)
         if "data_b64" in d:
             d["data"] = b64decode(d["data_b64"])
             del d["data_b64"]
 
         return CloudEvent(**d)
-
-
-Encoder = _JsonEncoder()
-Decoder = _JsonDecoder()

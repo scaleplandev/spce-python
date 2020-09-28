@@ -3,4 +3,6 @@ Thumbs.db
 venv/
 .pytest_cache/
 __pycache__/
-
+build/
+dist/
+spce.egg-info/

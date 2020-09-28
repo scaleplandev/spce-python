@@ -15,7 +15,7 @@
 import json
 import unittest
 
-from spce import CloudEvent, JsonEncoder, JsonDecoder
+from spce import CloudEvent, Json
 
 
 class JsonEncoderTests(unittest.TestCase):
@@ -26,7 +26,7 @@ class JsonEncoderTests(unittest.TestCase):
             source="oximeter/123",
             id="1000",
         )
-        encoded = JsonEncoder.encode(event)
+        encoded = Json.encode(event)
         target = '''
             {
              "type":"OximeterMeasured",
@@ -46,7 +46,7 @@ class JsonEncoderTests(unittest.TestCase):
             dataschema="https://particlemetrics.com/schema",
             time="2020-09-28T21:33:21Z"
         )
-        encoded = JsonEncoder.encode(event)
+        encoded = Json.encode(event)
         target = '''
             {"dataschema": "https://particlemetrics.com/schema",
              "id": "1000",
@@ -67,7 +67,7 @@ class JsonEncoderTests(unittest.TestCase):
             data=json.dumps({"spo2": 99}),
             datacontenttype="application/json"
         )
-        encoded = JsonEncoder.encode(event)
+        encoded = Json.encode(event)
         target = r'''
             {
              "type": "OximeterMeasured",
@@ -88,7 +88,7 @@ class JsonEncoderTests(unittest.TestCase):
             data=b'\x01\x02\x03\x04',
             datacontenttype="application/octet-stream"
         )
-        encoded = JsonEncoder.encode(event)
+        encoded = Json.encode(event)
         target = r'''
             {
              "type": "OximeterMeasured",
@@ -97,6 +97,25 @@ class JsonEncoderTests(unittest.TestCase):
              "specversion": "1.0",
              "datacontenttype": "application/octet-stream",
              "data_b64": "AQIDBA=="
+            }
+        '''
+        self.assertEqual(json.loads(target), json.loads(encoded))
+
+    def test_encode_extension_attribute(self):
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+            external1="foo/bar"
+        )
+        encoded = Json.encode(event)
+        target = '''
+            {
+             "type":"OximeterMeasured",
+             "source":"oximeter/123",
+             "id":"1000",
+             "specversion":"1.0",
+             "external1": "foo/bar" 
             }
         '''
         self.assertEqual(json.loads(target), json.loads(encoded))
@@ -118,7 +137,7 @@ class JsonDecoderTests(unittest.TestCase):
             source="oximeter/123",
             id="1000",
         )
-        event = JsonDecoder.decode(encoded_event)
+        event = Json.decode(encoded_event)
         self.assertEqual(target, event)
 
     def test_decode_optional(self):
@@ -140,10 +159,10 @@ class JsonDecoderTests(unittest.TestCase):
             dataschema="https://particlemetrics.com/schema",
             time="2020-09-28T21:33:21Z"
         )
-        event = JsonDecoder.decode(encoded_event)
+        event = Json.decode(encoded_event)
         self.assertEqual(target, event)
 
-    def test_encode_string_data(self):
+    def test_decode_string_data(self):
         encoded_event = r'''
             {
              "type": "OximeterMeasured",
@@ -161,10 +180,10 @@ class JsonDecoderTests(unittest.TestCase):
             data=json.dumps({"spo2": 99}),
             datacontenttype="application/json"
         )
-        event = JsonDecoder.decode(encoded_event)
+        event = Json.decode(encoded_event)
         self.assertEqual(target, event)
 
-    def test_encode_binary_data(self):
+    def test_decode_binary_data(self):
         encoded_event = r'''
             {
              "type": "OximeterMeasured",
@@ -182,5 +201,24 @@ class JsonDecoderTests(unittest.TestCase):
             data=b'\x01\x02\x03\x04',
             datacontenttype="application/octet-stream"
         )
-        event = JsonDecoder.decode(encoded_event)
+        event = Json.decode(encoded_event)
+        self.assertEqual(target, event)
+
+    def test_decode_extension_attribute(self):
+        encoded_event = '''
+            {
+             "type":"OximeterMeasured",
+             "source":"oximeter/123",
+             "id":"1000",
+             "specversion":"1.0",
+             "external1": "foo/bar" 
+            }
+        '''
+        target = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+            external1="foo/bar"
+        )
+        event = Json.decode(encoded_event)
         self.assertEqual(target, event)
