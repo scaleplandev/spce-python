@@ -19,7 +19,7 @@ with open("README.md") as f:
 
 setup(
     name='spce',
-    version='0.1.1',
+    version='0.2.0',
     packages=['spce'],
     url='https://github.com/scaleplandev/spce-python',
     license='Apache 2.0',
