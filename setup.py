@@ -32,12 +32,13 @@ setup(
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Operating System :: OS Independent',
     ],
-    keywords='cloudevents,scaleplan,event',
+    keywords='cloudevents,scaleplan,cloud,events,event',
     tests_require=['pytest', 'coverage', 'pytest-cov'],
     extras_require={
         'avro': ['avro>=1.10']
