@@ -53,7 +53,7 @@ event = CloudEvent(
 )
 ```
 
-The `time` field can be an [RFC3336] compatible timestamp string or a `datetime.datetime` object.
+The `time` field can be an [RFC3336](https://tools.ietf.org/html/rfc3339) compatible timestamp string or a `datetime.datetime` object.
 If left out, it won't be automatically set. If you need to set the `time` field to the current time,
 you can use the `datetime.utcnow` method:
 
