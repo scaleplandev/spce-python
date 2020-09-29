@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import builtins
+from datetime import datetime
 from typing import Union
 
 __all__ = "CloudEvent",
@@ -21,32 +23,49 @@ class CloudEvent:
 
     __slots__ = "_attributes", "_data", "_has_binary_data"
 
+    NOW = "now"
+
     def __init__(self, *,
                  type: str,
                  source: str,
                  id: str,
                  specversion="1.0",
-                 subject: Union[str, None] = None,
-                 data: Union[str, bytes, None] = None,
-                 datacontenttype: Union[str, None] = None,
-                 dataschema: Union[str, None] = None,
-                 time: Union[str, None] = None,
+                 subject = "",
+                 data: Union[str, bytes] = "",
+                 datacontenttype = "",
+                 dataschema = "",
+                 time: Union[str, datetime] = "",
                  **attributes
                  ):
-        self._attributes = {
+        attrs = {
             "type": type,
             "source": source,
             "id": id,
             "specversion": specversion,
-            "subject": subject,
-            "datacontenttype": datacontenttype,
-            "dataschema": dataschema,
-            "time": time,
         }
+
+        if isinstance(time, datetime):
+            # if the time has timezone information, convert it directly to isoformat
+            if time.tzinfo is not None and time.tzinfo.utcoffset(time) is not None:
+                time = time.isoformat()
+            else:
+                # time is naive, assume it is UTC
+                time = "%sZ" % time.isoformat()
+        elif isinstance(time, str):
+            pass
+        elif time:
+            raise TypeError("time must be either a string or a datetime.datetime, but it is: %s"
+                            % builtins.type(time))
+
+        if subject: attrs["subject"] = subject
+        if datacontenttype: attrs["datacontenttype"] = datacontenttype
+        if dataschema: attrs["dataschema"] = dataschema
+        if time: attrs["time"] = time
 
         # TODO: validation
 
-        self._data = data
+        self._attributes = attrs
+        self._data = data or None
         self._attributes.update(attributes)
         self._has_binary_data = isinstance(data, bytes)
 

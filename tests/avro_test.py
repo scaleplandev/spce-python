@@ -27,7 +27,9 @@ class AvroEncoderTests(unittest.TestCase):
             id="1000",
         )
         encoded = Avro.encode(event)
-        target = b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype\x00\x14dataschema\x00\x08time\x00\x00\x02'
+        target =\
+            (b'\x08\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x00\x02')
         self.assertEqual(target, encoded)
 
     def test_encode_optional(self):
@@ -41,10 +43,10 @@ class AvroEncoderTests(unittest.TestCase):
         )
         encoded = Avro.encode(event)
         target = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x06\x10subject1\x1edataco'
-             b'ntenttype\x00\x14dataschema\x06Dhttps://particlemetrics.com/schema\x08ti'
-             b'me\x06(2020-09-28T21:33:21Z\x00\x02')
+            (b'\x0e\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x06\x10subject1\x14datasc'
+             b'hema\x06Dhttps://particlemetrics.com/schema\x08time\x06(2020-09-28T21:33:'
+             b'21Z\x00\x02')
         self.assertEqual(target, encoded)
 
     def test_encode_string_data(self):
@@ -56,11 +58,10 @@ class AvroEncoderTests(unittest.TestCase):
             datacontenttype="application/json"
         )
         encoded = Avro.encode(event)
-
         target = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x06 application/json\x14dataschema\x00\x08time\x00\x00\x0c\x18{"spo2": 99}')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x1edatacontenttype\x06 application'
+             b'/json\x00\x0c\x18{"spo2": 99}')
         self.assertEqual(target, encoded)
 
     def test_encode_binary_data(self):
@@ -73,10 +74,9 @@ class AvroEncoderTests(unittest.TestCase):
         )
         encoded = Avro.encode(event)
         target = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x060application/octet-stream\x14dataschema\x00\x08time\x00\x00\x00\x08\x01'
-             b'\x02\x03\x04')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x1edatacontenttype\x060application'
+             b'/octet-stream\x00\x00\x08\x01\x02\x03\x04')
         self.assertEqual(target, encoded)
 
     def test_encode_extension_attribute(self):
@@ -88,16 +88,17 @@ class AvroEncoderTests(unittest.TestCase):
         )
         encoded = Avro.encode(event)
         target = \
-            (b'\x12\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x00\x14dataschema\x00\x08time\x00\x12external1\x06\x0efoo/bar\x00\x02')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x12external1\x06\x0efoo/bar\x00\x02')
         self.assertEqual(target, encoded)
 
 
 class AvroDecoderTests(unittest.TestCase):
 
     def test_decode_required(self):
-        encoded_event = b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype\x00\x14dataschema\x00\x08time\x00\x00\x02'
+        encoded_event =\
+            (b'\x08\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x00\x02')
         target = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
@@ -108,10 +109,10 @@ class AvroDecoderTests(unittest.TestCase):
 
     def test_decode_optional(self):
         encoded_event = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x06\x10subject1\x1edataco'
-             b'ntenttype\x00\x14dataschema\x06Dhttps://particlemetrics.com/schema\x08ti'
-             b'me\x06(2020-09-28T21:33:21Z\x00\x02')
+            (b'\x0e\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x06\x10subject1\x14datasc'
+             b'hema\x06Dhttps://particlemetrics.com/schema\x08time\x06(2020-09-28T21:33:'
+             b'21Z\x00\x02')
         target = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
@@ -125,9 +126,9 @@ class AvroDecoderTests(unittest.TestCase):
 
     def test_decode_string_data(self):
         encoded_event = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x06 application/json\x14dataschema\x00\x08time\x00\x00\x0c\x18{"spo2": 99}')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x1edatacontenttype\x06 application'
+             b'/json\x00\x0c\x18{"spo2": 99}')
         target = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
@@ -140,10 +141,9 @@ class AvroDecoderTests(unittest.TestCase):
 
     def test_decode_binary_data(self):
         encoded_event = \
-            (b'\x10\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x060application/octet-stream\x14dataschema\x00\x08time\x00\x00\x00\x08\x01'
-             b'\x02\x03\x04')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x1edatacontenttype\x060application'
+             b'/octet-stream\x00\x00\x08\x01\x02\x03\x04')
         target = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
@@ -156,9 +156,8 @@ class AvroDecoderTests(unittest.TestCase):
 
     def test_decode_extension_attribute(self):
         encoded_event = \
-            (b'\x12\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
-             b'\x06\x081000\x16specversion\x06\x061.0\x0esubject\x00\x1edatacontenttype'
-             b'\x00\x14dataschema\x00\x08time\x00\x12external1\x06\x0efoo/bar\x00\x02')
+            (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+             b'\x06\x081000\x16specversion\x06\x061.0\x12external1\x06\x0efoo/bar\x00\x02')
         target = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",

@@ -100,6 +100,8 @@ class CloudEventTestCase(unittest.TestCase):
                            dataschema="http://particlemetrics.com/schemas/oximeter#")
 
     def test_set_time(self):
+        from datetime import datetime, timezone, timedelta
+
         event = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
@@ -111,6 +113,38 @@ class CloudEventTestCase(unittest.TestCase):
                            source="oximeter/123",
                            id="1000",
                            time="2020-09-28T21:33:21Z")
+
+        # datetime object without timezone
+        dt = datetime(2020, 9, 25, 13, 32, 56)
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+            time=dt
+        )
+        self.compare_event(event,
+                           type="OximeterMeasured",
+                           source="oximeter/123",
+                           id="1000",
+                           time="2020-09-25T13:32:56Z")
+
+        istanbul = timezone(timedelta(0, 10800), "+03")
+        # datetime object with timezone
+        dt = datetime(2020, 9, 25, 13, 32, 56).astimezone(istanbul)
+        event = CloudEvent(
+            type="OximeterMeasured",
+            source="oximeter/123",
+            id="1000",
+            time=dt
+        )
+        self.compare_event(event,
+                           type="OximeterMeasured",
+                           source="oximeter/123",
+                           id="1000",
+                           time="2020-09-25T13:32:56+03:00")
+
+
+
 
     def test_set_extension_attribute(self):
         event = CloudEvent(
@@ -140,7 +174,7 @@ class CloudEventTestCase(unittest.TestCase):
             id="1000",
         )
         event_str = str(event)
-        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0', 'subject': None, 'datacontenttype': None, 'dataschema': None, 'time': None}'''
+        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0'}'''
         self.assertEqual(target, event_str)
 
     def test_repr(self):
@@ -150,7 +184,7 @@ class CloudEventTestCase(unittest.TestCase):
             id="1000",
         )
         event_str = repr(event)
-        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0', 'subject': None, 'datacontenttype': None, 'dataschema': None, 'time': None}'''
+        target = '''{'type': 'OximeterMeasured', 'source': 'oximeter/123', 'id': '1000', 'specversion': '1.0'}'''
         self.assertEqual(target, event_str)
 
     def compare_event(self, event: CloudEvent, *,

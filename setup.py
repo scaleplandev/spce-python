@@ -19,7 +19,7 @@ with open("README.md") as f:
 
 setup(
     name='spce',
-    version='0.2.0',
+    version='0.2.1',
     packages=['spce'],
     url='https://github.com/scaleplandev/spce-python',
     license='Apache 2.0',
@@ -39,7 +39,7 @@ setup(
         'Operating System :: OS Independent',
     ],
     keywords='cloudevents,scaleplan,cloud,events,event',
-    tests_require=['pytest', 'coverage', 'pytest-cov'],
+    tests_require=['pytest', 'coverage', 'pytest-cov', 'avro'],
     extras_require={
         'avro': ['avro>=1.10']
     }

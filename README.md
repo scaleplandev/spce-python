@@ -1,5 +1,7 @@
 # ScalePlan CloudEvents for Python
 
+[![SPCE at PyPI](https://img.shields.io/pypi/v/spce.svg?maxAge=2592)](https://pypi.python.org/pypi/spce)
+
 Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0.
 Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
 
@@ -34,6 +36,8 @@ event = CloudEvent(
 )
 ```
 
+The `id` field is required, it won't be auto-generated if blank.
+
 Create a CloudEvent with optional attributes:
 
 ```python
@@ -49,11 +53,29 @@ event = CloudEvent(
 )
 ```
 
+The `time` field can be an [RFC3336] compatible timestamp string or a `datetime.datetime` object.
+If left out, it won't be automatically set. If you need to set the `time` field to the current time,
+you can use the `datetime.utcnow` method:
+
+```python
+from datetime import datetime
+
+now = datetime.utcnow()
+event = CloudEvent(
+    type="OximeterMeasured",
+    source="oximeter/123",
+    id="1000",
+    time=now
+)
+```
+
+Check https://github.com/scaleplandev/spce-python/blob/master/tests/cloudevents_test.py for a few examples that set the time.
+
 Required and optional attributes can be directly accessed:
 
 ```python
 assert event.type == "OximeterMeasured" 
-assert event.subject == "subject1" 
+assert event.time == "2020-09-28T21:33:21Z" 
 ```
 
 Create a CloudEvent with extension attributes:
@@ -80,6 +102,8 @@ from spce import Json
 
 encoded_event = Json.encode(event)
 ```
+
+Note that blank fields won't be encoded.
 
 Decode an event in JSON:
 
@@ -110,6 +134,8 @@ from spce import Avro
 encoded_event = Avro.encode(event)
 ```
 
+Note that blank fields won't be encoded.
+
 Decode an event in Avro:
 
 ```python
@@ -133,7 +159,7 @@ decoded_event = Avro.decode(text)
 
 ## License
 
-(c) 2020 Scale Plan Yazılım A.Ş.
+(c) 2020 Scale Plan Yazılım A.Ş. https://scaleplan.io
 
 Licensed under [Apache 2.0](LICENSE). See the [LICENSE](LICENSE).
 

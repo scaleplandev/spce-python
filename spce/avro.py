@@ -99,14 +99,12 @@ def _make_avro_codec():
     writer = DatumWriter(schema)
     reader = DatumReader(schema)
 
-    class Avro:
+    class _Avro:
 
         @classmethod
         def encode_to(cls, event: CloudEvent, file):
             encoder = BinaryEncoder(file)
             writer.write({"attribute": event._attributes, "data": event._data}, encoder)
-            # if event._data is not None:
-            #     writer.write({"data": event._data}, encoder)
 
         @classmethod
         def encode(cls, event: CloudEvent):
@@ -118,8 +116,8 @@ def _make_avro_codec():
         def decode_from(cls, file) -> CloudEvent:
             decoder = BinaryDecoder(file)
             raw_event = reader.read(decoder)
-            attributes = raw_event["attribute"]
-            attributes["data"] = raw_event["data"]
+            attributes = raw_event.get("attribute") or {}
+            attributes["data"] = raw_event.get("data") or ""
             return CloudEvent(**attributes)
 
         @classmethod
@@ -127,8 +125,7 @@ def _make_avro_codec():
             with BytesIO(data) as f:
                 return cls.decode_from(f)
 
-
-    return Avro
+    return _Avro
 
 
 Avro = _make_avro_codec()
