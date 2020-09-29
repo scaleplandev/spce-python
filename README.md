@@ -6,7 +6,13 @@ Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0
 Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
 
 This package has no dependencies beyond the Python standard library with the base install.
-Optionally depends on the `avro` package for Avro encode/decode functionality. 
+Optionally depends on the `avro` package for Avro encode/decode functionality.
+
+## News
+
+### 0.2.2 - (*2020-09-29*)
+
+* First public release. 
 
 ## Install
 

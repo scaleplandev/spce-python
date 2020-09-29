@@ -96,7 +96,7 @@ class JsonEncoderTests(unittest.TestCase):
              "id": "1000",
              "specversion": "1.0",
              "datacontenttype": "application/octet-stream",
-             "data_b64": "AQIDBA=="
+             "data_base64": "AQIDBA=="
             }
         '''
         self.assertEqual(json.loads(target), json.loads(encoded))
@@ -191,7 +191,7 @@ class JsonDecoderTests(unittest.TestCase):
              "id": "1000",
              "specversion": "1.0",
              "datacontenttype": "application/octet-stream",
-             "data_b64": "AQIDBA=="
+             "data_base64": "AQIDBA=="
             }
         '''
         target = CloudEvent(

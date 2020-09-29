@@ -33,7 +33,7 @@ class Json:
                 kvs.append('"%s":%s' % (attr, encoder.encode(value)))
         if event._data:
             if event._has_binary_data:
-                kvs.append('"data_b64":%s' % encoder.encode(b64encode(event._data).decode()))
+                kvs.append('"data_base64":%s' % encoder.encode(b64encode(event._data).decode()))
             else:
                 kvs.append('"data":%s' % encoder.encode(event._data))
         return "{%s}" % ",".join(kvs)
@@ -41,8 +41,8 @@ class Json:
     @classmethod
     def decode(cls, text: str) -> CloudEvent:
         d = json.loads(text)
-        if "data_b64" in d:
-            d["data"] = b64decode(d["data_b64"])
-            del d["data_b64"]
+        if "data_base64" in d:
+            d["data"] = b64decode(d["data_base64"])
+            del d["data_base64"]
 
         return CloudEvent(**d)
