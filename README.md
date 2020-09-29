@@ -147,20 +147,11 @@ Decode an event in Avro:
 ```python
 from spce import Avro
 
-text = """
-    {
-      "type": "OximeterMeasured",
-      "source": "oximeter/123",
-      "id": "1000",
-      "specversion": "1.0",
-      "datacontenttype": "application/json",
-      "subject": "subject1",
-      "dataschema": "https://particlemetrics.com/schema",
-      "time": "2020-09-28T21:33:21Z",
-      "data": "{\"spo2\": 99})"
-    }
-"""
-decoded_event = Avro.decode(text) 
+encoded_event = \
+    (b'\n\x08type\x06 OximeterMeasured\x0csource\x06\x18oximeter/123\x04id'
+     b'\x06\x081000\x16specversion\x06\x061.0\x1edatacontenttype\x06 application'
+     b'/json\x00\x0c\x18{"spo2": 99}')
+decoded_event = Avro.decode(encoded_event) 
 ```
 
 ## License
