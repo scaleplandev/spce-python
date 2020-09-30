@@ -8,7 +8,18 @@ Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/s
 This package has no dependencies beyond the Python standard library with the base install.
 Optionally depends on the `avro` package for Avro encode/decode functionality.
 
+## Features
+
+* Implements CloudEvents 1.0 spec.
+* JSON and JSON batch encoding/decoding.
+* Avro encoding/decoding.
+* Simple API.
+
 ## News
+
+### 0.2.3 - (*2020-09-30*)
+
+* Added support for encoding/decoding batch events in JSON.  
 
 ### 0.2.2 - (*2020-09-29*)
 
@@ -29,6 +40,8 @@ Install with JSON and Avro codecs:
     pip install spce[avro]
     
 ## Usage:
+
+### Creating Events
 
 Create a CloudEvent with required attributes:
 
@@ -101,6 +114,8 @@ Extension attributes can be accessed using the `attribute` method:
 assert event.attribute("external1") == "foo/bar" 
 ```
 
+### Encoding/Decoding Events in JSON
+
 Encode an event in JSON:
 
 ```python
@@ -110,6 +125,30 @@ encoded_event = Json.encode(event)
 ```
 
 Note that blank fields won't be encoded.
+
+Encode a batch of events in JSON:
+
+```python
+from spce import CloudEvent, Json
+
+event_batch = [
+    CloudEvent(
+        type="OximeterMeasured",
+        source="oximeter/123",
+        id="1000",
+        datacontenttype="application/json",
+        data=r'{"spo2": 99})',
+    ),
+    CloudEvent(
+        type="OximeterMeasured",
+        source="oximeter/123",
+        id="1001",
+        datacontenttype="application/json",
+        data=b'\x01binarydata\x02',
+    ),
+]
+encoded_batch = Json.encode(event_batch)
+```
 
 Decode an event in JSON:
 
@@ -131,6 +170,34 @@ text = """
 """
 decoded_event = Json.decode(text) 
 ```
+
+Decode a batch of events in JSON:
+
+```python
+text = r'''
+    [
+        {
+         "type":"OximeterMeasured",
+         "source":"oximeter/123",
+         "id":"1000",
+         "specversion":"1.0",
+         "datacontenttype": "application/json",
+         "data": "{\"spo2\": 99}"
+        },
+        {
+         "type":"OximeterMeasured",
+         "source":"oximeter/123",
+         "id":"1001",
+         "specversion":"1.0",
+         "datacontenttype": "application/json",
+         "data_base64": "AWJpbmFyeWRhdGEC"
+        }
+    ]
+'''
+decoded_events = Json.decode(text) 
+```
+
+### Encoding/Decoding Events in Avro
 
 Encode an event in Avro:
 
