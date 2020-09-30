@@ -14,6 +14,7 @@
 
 import json
 from base64 import b64encode, b64decode
+from typing import Union, Iterable
 
 from .cloudevents import CloudEvent
 
@@ -25,24 +26,38 @@ class Json:
     _ENCODER = json.JSONEncoder()
 
     @classmethod
-    def encode(cls, event: CloudEvent):
-        kvs = []
-        encoder = cls._ENCODER
-        for attr, value in event._attributes.items():
-            if value:
-                kvs.append('"%s":%s' % (attr, encoder.encode(value)))
-        if event._data:
-            if event._has_binary_data:
-                kvs.append('"data_base64":%s' % encoder.encode(b64encode(event._data).decode()))
-            else:
-                kvs.append('"data":%s' % encoder.encode(event._data))
-        return "{%s}" % ",".join(kvs)
+    def encode(cls, event: Union[CloudEvent, Iterable[CloudEvent]]) -> str:
+        if isinstance(event, Iterable):
+            encoded = [cls.encode(e) for e in event]
+            return "[%s]" % ",".join(encoded)
+        elif isinstance(event, CloudEvent):
+            kvs = []
+            encoder = cls._ENCODER
+            for attr, value in event._attributes.items():
+                if value:
+                    kvs.append('"%s":%s' % (attr, encoder.encode(value)))
+            if event._data:
+                if event._has_binary_data:
+                    kvs.append('"data_base64":%s' % encoder.encode(b64encode(event._data).decode()))
+                else:
+                    kvs.append('"data":%s' % encoder.encode(event._data))
+            return "{%s}" % ",".join(kvs)
+        else:
+            raise TypeError("JSON.encode cannot encode %s" % type(event))
 
     @classmethod
-    def decode(cls, text: str) -> CloudEvent:
+    def decode(cls, text: str) -> Union[CloudEvent, Iterable[CloudEvent]]:
         d = json.loads(text)
+        if isinstance(d, dict):
+            return CloudEvent(**cls._normalize_data(d))
+        elif isinstance(d, Iterable):
+            return [CloudEvent(**cls._normalize_data(it)) for it in d]
+        else:
+            raise TypeError("JSON.decode cannot decode %s" % type(d))
+
+    @classmethod
+    def _normalize_data(cls, d: dict) -> dict:
         if "data_base64" in d:
             d["data"] = b64decode(d["data_base64"])
             del d["data_base64"]
-
-        return CloudEvent(**d)
+        return d

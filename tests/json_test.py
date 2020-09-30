@@ -120,6 +120,72 @@ class JsonEncoderTests(unittest.TestCase):
         '''
         self.assertEqual(json.loads(target), json.loads(encoded))
 
+    def test_encode_batch_0_items(self):
+        self.assertEqual("[]", Json.encode([]))
+
+    def test_encode_batch_1_item(self):
+        event_batch = [
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1000",
+                datacontenttype="application/json",
+                data=json.dumps({"spo2": 99}),
+            )
+        ]
+        encoded_batch = Json.encode(event_batch)
+        target = r'''
+            [{
+             "type":"OximeterMeasured",
+             "source":"oximeter/123",
+             "id":"1000",
+             "specversion":"1.0",
+             "datacontenttype": "application/json",
+             "data": "{\"spo2\": 99}"
+            }]
+        '''
+        self.assertEqual(json.loads(target), json.loads(encoded_batch))
+
+    def test_encode_batch_2_items(self):
+        event_batch = [
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1000",
+                datacontenttype="application/json",
+                data=json.dumps({"spo2": 99}),
+            ),
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1001",
+                datacontenttype="application/json",
+                data=b'\x01binarydata\x02',
+            ),
+        ]
+        encoded_batch = Json.encode(event_batch)
+        target = r'''
+            [
+                {
+                 "type":"OximeterMeasured",
+                 "source":"oximeter/123",
+                 "id":"1000",
+                 "specversion":"1.0",
+                 "datacontenttype": "application/json",
+                 "data": "{\"spo2\": 99}"
+                },
+                {
+                 "type":"OximeterMeasured",
+                 "source":"oximeter/123",
+                 "id":"1001",
+                 "specversion":"1.0",
+                 "datacontenttype": "application/json",
+                 "data_base64": "AWJpbmFyeWRhdGEC"
+                }
+            ]
+        '''
+        self.assertEqual(json.loads(target), json.loads(encoded_batch))
+
 
 class JsonDecoderTests(unittest.TestCase):
 
@@ -222,3 +288,67 @@ class JsonDecoderTests(unittest.TestCase):
         )
         event = Json.decode(encoded_event)
         self.assertEqual(target, event)
+
+    def test_decode_batch_0_items(self):
+        self.assertEqual([], Json.decode("[]"))
+
+    def test_decode_batch_1_item(self):
+        encoded_batch = r'''
+            [{
+             "type":"OximeterMeasured",
+             "source":"oximeter/123",
+             "id":"1000",
+             "specversion":"1.0",
+             "datacontenttype": "application/json",
+             "data": "{\"spo2\": 99}"
+            }]
+        '''
+        target = [
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1000",
+                datacontenttype="application/json",
+                data=json.dumps({"spo2": 99}),
+            )
+        ]
+        self.assertEqual(target, Json.decode(encoded_batch))
+
+    def test_decode_batch_2_items(self):
+        encoded_batch = r'''
+            [
+                {
+                 "type":"OximeterMeasured",
+                 "source":"oximeter/123",
+                 "id":"1000",
+                 "specversion":"1.0",
+                 "datacontenttype": "application/json",
+                 "data": "{\"spo2\": 99}"
+                },
+                {
+                 "type":"OximeterMeasured",
+                 "source":"oximeter/123",
+                 "id":"1001",
+                 "specversion":"1.0",
+                 "datacontenttype": "application/json",
+                 "data_base64": "AWJpbmFyeWRhdGEC"
+                }
+            ]
+        '''
+        target = [
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1000",
+                datacontenttype="application/json",
+                data=json.dumps({"spo2": 99}),
+            ),
+            CloudEvent(
+                type="OximeterMeasured",
+                source="oximeter/123",
+                id="1001",
+                datacontenttype="application/json",
+                data=b'\x01binarydata\x02',
+            ),
+        ]
+        self.assertEqual(target, Json.decode(encoded_batch))
