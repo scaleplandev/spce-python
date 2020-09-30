@@ -130,7 +130,7 @@ class CloudEventTestCase(unittest.TestCase):
 
         istanbul = timezone(timedelta(0, 10800), "+03")
         # datetime object with timezone
-        dt = datetime(2020, 9, 25, 13, 32, 56).astimezone(istanbul)
+        dt = datetime(2020, 9, 25, 13, 32, 56, tzinfo=istanbul)
         event = CloudEvent(
             type="OximeterMeasured",
             source="oximeter/123",
