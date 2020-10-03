@@ -2,8 +2,8 @@
 
 [![SPCE at PyPI](https://img.shields.io/pypi/v/spce.svg?maxAge=2592)](https://pypi.python.org/pypi/spce)
 
-Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0.
-Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
+    Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0.
+    Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
 
 This package has no dependencies beyond the Python standard library with the base install.
 Optionally depends on the `avro` package for Avro encode/decode functionality.
@@ -124,7 +124,7 @@ from spce import Json
 encoded_event = Json.encode(event)
 ```
 
-Note that blank fields won't be encoded.
+Note that blank/unset attributes won't be encoded.
 
 Encode a batch of events in JSON:
 
@@ -227,3 +227,16 @@ decoded_event = Avro.decode(encoded_event)
 
 Licensed under [Apache 2.0](LICENSE). See the [LICENSE](LICENSE).
 
+    Copyright 2020 Scale Plan Yazılım A.Ş.
+    
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    
+        http://www.apache.org/licenses/LICENSE-2.0
+    
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
