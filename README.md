@@ -2,8 +2,8 @@
 
 [![SPCE at PyPI](https://img.shields.io/pypi/v/spce.svg?maxAge=2592)](https://pypi.python.org/pypi/spce)
 
-    Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0.
-    Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
+Unofficial Python implementation for [CloudEvents](https://cloudevents.io/) v1.0.
+Check out the [CloudEvents spec](https://github.com/cloudevents/spec/blob/v1.0/spec.md).
 
 This package has no dependencies beyond the Python standard library with the base install.
 Optionally depends on the `avro` package for Avro encode/decode functionality.
